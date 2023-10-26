@@ -289,8 +289,6 @@ function intersection(x0, y0, r0, x1, y1, r1) {
     return [[xi, yi], [xi_prime, yi_prime]];
 }
 
-initMap();
-
 function min(lst) {
     if(lst.length == 0) {
         return null;
