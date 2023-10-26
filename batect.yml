@@ -1,0 +1,21 @@
+containers:
+  run-env:
+    image: nginx:1.25.2
+    volumes:
+      - local: .
+        container: /usr/share/nginx/html
+    working_directory: /usr/share/nginx/html
+
+tasks:
+  shell:
+    description: Start a shell in the development environment
+    run:
+      container: run-env
+      command: bash
+  run:
+    description: Run the application
+    run:
+      container: run-env
+      ports:
+        - local: 8080
+          container: 80
