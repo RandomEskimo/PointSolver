@@ -42,6 +42,7 @@ const startInput = {
 };
 
 async function initMap() {
+    const { LatLngBounds } = await google.maps.importLibrary("core");
     const { Map, Polyline } = await google.maps.importLibrary("maps");
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
     const { spherical } = await google.maps.importLibrary("geometry");
@@ -67,24 +68,30 @@ async function initMap() {
             convertToGrid(input.points.filter(pnt => pnt.type == "abs"));
         }
 
+        var pointsOnly = input.points.filter(it => it.type == "abs" || it.type == "calc");
+
         input.points.forEach(pnt => {
             if(pnt.type == "abs") {
                 addPoint(pnt);
             } else if(pnt.type == "calc") {
-                var pntPos = calcPoint(input.points.filter(it => it.type == "abs" || it.type == "calc"), pnt);
+                var pntPos = calcPoint(pointsOnly, pnt);
                 if(pntPos) {
                     addPoint(pnt);
                 }
             } else if(pnt.type == "line") {
-                buildLine(input.points.filter(it => it.type == "abs" || it.type == "calc"), pnt);
+                buildLine(pointsOnly, pnt);
             } else if(pnt.type == "debug:distance") {
-                debugDistance(input.points.filter(it => it.type == "abs" || it.type == "calc"), pnt);
+                debugDistance(pointsOnly, pnt);
             } else if(pnt.type == "label") {
                 addLabel(pnt);
             }
         });
 
         console.log(input.points);
+
+        var bounds = new LatLngBounds();
+        pointsOnly.forEach(pnt => bounds.extend({ lat: pnt.lat, lng: pnt.lng }));
+        map.fitBounds(bounds);
     }
     
     function clearMap() {
